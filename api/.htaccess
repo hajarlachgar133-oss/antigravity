@@ -1,0 +1,24 @@
+# ============================================================
+# NexusIT API — Apache .htaccess
+# ============================================================
+
+# Route all requests to the correct PHP file
+Options -Indexes
+
+# NOTE: CORS and Security headers, as well as OPTIONS preflight handling,
+# are now centrally managed by PHP in api/config.php to prevent 
+# duplicate headers issue ("*, *") which causes strict browsers to fail.
+
+# <IfModule mod_headers.c>
+# Header always set Access-Control-Allow-Origin "*"
+# Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+# Header always set Access-Control-Allow-Headers "Content-Type, Authorization"
+# Header always set X-Content-Type-Options "nosniff"
+# Header always set X-Frame-Options "SAMEORIGIN"
+# </IfModule>
+
+# <IfModule mod_rewrite.c>
+#   RewriteEngine On
+#   RewriteCond %{REQUEST_METHOD} OPTIONS
+#   RewriteRule .* - [R=204,L]
+# </IfModule>
