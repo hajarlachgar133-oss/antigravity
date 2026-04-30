@@ -1,0 +1,7 @@
+# Protect data directory - don't allow direct web access
+<Files "*.json">
+    Deny from all
+</Files>
+
+# Block directory listing
+Options -Indexes

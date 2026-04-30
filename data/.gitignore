@@ -1,0 +1,6 @@
+# Mock database for development only
+data/mock_db.json
+data/*.json
+
+# Keep the directory
+!data/.gitkeep

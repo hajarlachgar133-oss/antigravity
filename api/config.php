@@ -32,6 +32,18 @@ define('DB_PASS', '');            // ← PUT YOUR MYSQL ROOT PASSWORD HERE
 
 define('DB_CHARSET', 'utf8mb4');
 
+/* —— Development mode: Use mock database if MySQL unavailable ——— */
+define('USE_MOCK_DB', getenv('USE_MOCK_DB') === 'true' || !isPortOpen(DB_HOST, DB_PORT));
+
+function isPortOpen($host, $port, $timeout = 1) {
+    $fp = @fsockopen($host, $port, $errno, $errstr, $timeout);
+    if ($fp) {
+        fclose($fp);
+        return true;
+    }
+    return false;
+}
+
 /* —— Global exception & error handler ——————————————————————
    Ensures ANY uncaught error returns valid JSON instead of
    an empty body or an HTML error page.
@@ -69,12 +81,19 @@ register_shutdown_function(function () {
 });
 
 /**
- * Return a singleton PDO connection.
+ * Return a singleton PDO connection or MockPDO for development.
  */
 function db(): PDO
 {
     static $pdo = null;
     if ($pdo === null) {
+        // Use mock database if MySQL is unavailable
+        if (USE_MOCK_DB) {
+            require_once __DIR__ . '/MockDatabase.php';
+            $pdo = new MockPDO(__DIR__ . '/../data/mock_db.json');
+            return $pdo;
+        }
+
         $dsn = sprintf(
             'mysql:host=%s;port=%s;dbname=%s;charset=%s',
             DB_HOST,
@@ -93,15 +112,13 @@ function db(): PDO
             $hint = (strpos($e->getMessage(), '1045') !== false)
                 ? ' Your MySQL root password is likely wrong — update DB_PASS in api/config.php. Test it: http://localhost/ocp/api/test.php?pass=YOUR_PASSWORD'
                 : (strpos($e->getMessage(), '2002') !== false
-                    ? ' MySQL/MariaDB is not running. Start it from XAMPP Control Panel or Services.'
+                    ? ' MySQL/MariaDB is not running. Falling back to mock database. Start MySQL from XAMPP Control Panel or Services.'
                     : ' Check DB_HOST / DB_PORT / DB_NAME in api/config.php.');
-            $debugMsg = mb_convert_encoding($e->getMessage(), 'UTF-8', 'auto');
-            echo json_encode([
-                'success' => false,
-                'error' => 'Database connection failed.' . $hint,
-                'debug' => $debugMsg,
-            ], JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
-            exit;
+            
+            // Fall back to mock database on connection failure
+            require_once __DIR__ . '/MockDatabase.php';
+            $pdo = new MockPDO(__DIR__ . '/../data/mock_db.json');
+            return $pdo;
         }
     }
     return $pdo;
