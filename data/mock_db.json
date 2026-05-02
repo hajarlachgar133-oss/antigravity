@@ -1,0 +1,31 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "full_name": "Admin User",
+      "email": "admin@nexusit.com",
+      "password_hash": "$2y$10$D7VXXA4WQgAT8MdUFV9Vg.XTsQxH7CKpc6jhY16xeIvy5FYbfrjJ.",
+      "role": "admin",
+      "department": "IT Department",
+      "avatar_initials": "AU",
+      "is_active": 1,
+      "created_at": "2026-04-10 10:00:00",
+      "updated_at": "2026-04-10 10:00:00"
+    },
+    {
+      "id": 2,
+      "full_name": "Test Employee",
+      "email": "employee@nexusit.com",
+      "password_hash": "$2y$10$D7VXXA4WQgAT8MdUFV9Vg.XTsQxH7CKpc6jhY16xeIvy5FYbfrjJ.",
+      "role": "employee",
+      "department": "Support",
+      "avatar_initials": "TE",
+      "is_active": 1,
+      "created_at": "2026-04-10 10:00:00",
+      "updated_at": "2026-04-10 10:00:00"
+    }
+  ],
+  "tickets": [],
+  "inventory": [],
+  "activity_log": []
+}
